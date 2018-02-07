@@ -16,8 +16,8 @@
  */
 /**
  * @typedef {Object} Image
- * @property {String} thumbnail Bytes count
- * @property {String} fullSize Bytes count
+ * @property {String} thumbnail Link to image
+ * @property {String} fullSize Link to image
  */
 
 module.exports = (Interface=>{
