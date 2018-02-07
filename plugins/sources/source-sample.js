@@ -14,6 +14,11 @@
  * @property {number} toDownload Bytes count
  * @property {number} toInstall Bytes count
  */
+/**
+ * @typedef {Object} Image
+ * @property {number} thumbnail Bytes count
+ * @property {number} fullSize Bytes count
+ */
 
 module.exports = (Interface=>{
     return Interface._properties = {
@@ -36,7 +41,7 @@ module.exports = (Interface=>{
     /**
      * Gets links for avaiable images for app (jpg, png, gif, svg, etc. (all supported by Chromium))
      * @param {String} name App name
-     * @param {function(Error, Array<String>):void} callback Standard NodeJS callback
+     * @param {function(Error, Array<Image>):void} callback Standard NodeJS callback
      * @return {Void}
      */
     images(name, callback){
