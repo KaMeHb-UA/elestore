@@ -176,11 +176,12 @@ module.exports = (Interface=>{
     }
     /**
      * Lists all avaiable apps
-     * @param {ListParameters} params Parameters for getting indexes
+     * @param {ListParameters=} params Parameters for getting indexes
      * @param {function(Error, Array<App>):void} callback Standard NodeJS callback
      * @return {Void}
      */
     list(params, callback){
+        !callback && (typeof params == 'function') && (callback = params, params = {}) // if params is not defined
         // do some stuff
     }
     /**
@@ -240,6 +241,7 @@ module.exports = (Interface=>{
      * @return {Void}
      */
     reviews(name, langs, callback){
+        !callback && (typeof langs == 'function') && (callback = langs, langs = false) // if langs is not defined
         // do some stuff
     }
 })
