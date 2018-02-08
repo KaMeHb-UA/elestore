@@ -221,4 +221,25 @@ module.exports = (Interface=>{
     rating(name, callback){
         // do some stuff
     }
+    /**
+     * Adds a review to app
+     * @param {String} name App name
+     * @param {ReviewProperties} props Review's properties
+     * @param {String} review Review text
+     * @param {function(Error):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    review(name, props, review, callback){
+        // do some stuff
+    }
+    /**
+     * Gets app's reviews
+     * @param {String} name App name
+     * @param {Array<String>=} langs Langs to load with
+     * @param {function(Error, Array<Review>):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    reviews(name, langs, callback){
+        // do some stuff
+    }
 })
