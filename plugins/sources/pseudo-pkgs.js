@@ -7,6 +7,7 @@
 /**
  * @typedef {Object} App
  * @property {String} name App name
+ * @property {String} displayName App name
  * @property {String} version App version
  */
 /**
@@ -133,12 +134,43 @@ var packages = [
         'pseudopkg-1',
         'pseudopkg-2',
     ],
+    categories = {
+        'pseudopkg-0': [
+            'Administrative',
+            'Media',
+        ],
+        'pseudopkg-1': [
+            'Text',
+            'Media',
+        ],
+        'pseudopkg-2': [
+            'Tools',
+            'Media',
+        ],
+        'pseudopkg-3': [
+            'Tools',
+            'Administrative',
+        ],
+        'pseudopkg-4': [
+            'Tools',
+            'Text',
+        ],
+        'pseudopkg-5': [
+            'Administrative',
+            'Text',
+        ],
+    },
+    displayNames = {
+        'pseudopkg-0': 'pseudoPackage 0',
+        'pseudopkg-2': 'pseudoPackage 2',
+        'pseudopkg-6': 'pseudoPackage 6',
+    },
     cache = {};
 module.exports = (Interface=>{
     return Interface._properties = {
         platform: 'linux',  // false - all platforms
         arch: false,        // false - all archs
-        dependencies : {    // all dependencies needed by plugin, like in package.json
+        dependencies: {    // all dependencies needed by plugin, like in package.json
             // async: "^2.6.0" // <-- JUST EXAMPLE
         }
     }, Interface
@@ -175,7 +207,13 @@ module.exports = (Interface=>{
         }
         installed.forEach(app => {
             cache.apps[app].installed = true
-        })
+        });
+        for(let i in categories){
+            cache.apps[i].categories = categories[i]
+        }
+        for(let i in displayNames){
+            cache.apps[i].displayName = displayNames[i]
+        }
     }
     /**
      * Lists all avaiable apps
@@ -185,7 +223,25 @@ module.exports = (Interface=>{
      */
     list(params, callback){
         !callback && (typeof params == 'function') && (callback = params, params = {}) // if params is not defined
-        // do some stuff
+
+        var appsDB = [], conditions, i;
+        for(i in cache.apps){
+            conditions = true;
+            if (params.installed !== undefined && cache.apps[i].installed != params.installed) conditions = false;
+            if (conditions && params.ratings && !(params.ratings.indexOf(cache.apps[i].rating) + 1)) conditions = false;
+            if (conditions && params.categories && !(a => {
+                params.categories.forEach(category => {
+                    cache.apps[i].categories.forEach(targetCategory => {
+                        category == targetCategory && (a = true)
+                    })
+                }); return a
+            })(false)) conditions = false;
+            conditions && appsDB.push({
+                name: i,
+                displayName: cache.apps[i].displayName,
+                version: cache.apps[i].version
+            })
+        }
     }
     /**
      * Gets links for avaiable images for app (jpg, png, gif, svg, etc. (all supported by Chromium))
