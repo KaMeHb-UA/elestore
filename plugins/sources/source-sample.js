@@ -99,10 +99,11 @@ module.exports = (Interface=>{
      * @param {String} name App name
      * @param {ReviewProperties} props Review's properties
      * @param {String} review Review text
+     * @param {String} reviewShort Short review text (heading)
      * @param {function(Error):void} callback Standard NodeJS callback
      * @return {Void}
      */
-    review(name, props, review, callback){
+    review(name, props, review, reviewShort, callback){
         // do some stuff
     }
     /**
