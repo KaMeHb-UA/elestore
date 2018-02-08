@@ -242,6 +242,7 @@ module.exports = (Interface=>{
                 version: cache.apps[i].version
             })
         }
+        callback(null, appsDB);
     }
     /**
      * Gets links for avaiable images for app (jpg, png, gif, svg, etc. (all supported by Chromium))
