@@ -1,8 +1,11 @@
 {
     "name": "elestore",
     "version": "0.0.0",
-    "main"    : "main.js",
+    "main": "main.js",
     "scripts": {
         "start": "electron ."
+    },
+    "dependencies": {
+        "mkdirp": "^0.5.1"
     }
 }
