@@ -237,13 +237,13 @@ var packages = [
             toInstall: 23434534
         },
     },
-    cache = {};
+    cache = {me:{}};
 module.exports = (Interface=>{
     return Interface._properties = {
         platform: 'linux',  // false - all platforms
         arch: false,        // false - all archs
         dependencies: {    // all dependencies needed by plugin, like in package.json
-            // async: "^2.6.0" // <-- JUST EXAMPLE
+            request: "^2.83.0"
         }
     }, Interface
 })(class{
@@ -295,6 +295,16 @@ module.exports = (Interface=>{
         for(let i in ratedByMe){
             cache.apps[i].myRating = ratedByMe[i]
         }
+
+        // next, creating "demo" user
+
+        const request = require('request');
+
+        request('https://randomuser.me/api/', { json: true }, (err, res, data) => {
+            if(err) return console.log(err);
+            cache.me.uname = `${data.results[0].name.first.slice(0, 1).toUpperCase() + data.results[0].name.first.slice(1)} ${data.results[0].name.last.slice(0, 1).toUpperCase() + data.results[0].name.last.slice(1)}`;
+            cache.me.picture = data.results[0].picture.thumbnail
+        });
     }
     /**
      * Lists all avaiable apps
