@@ -19,6 +19,19 @@
  * @property {String} thumbnail Link to image
  * @property {String} fullSize Link to image
  */
+/**
+ * @typedef {Object} ReviewProperties
+ * @property {String} lang Review lang
+ * @property {number} rate Rate for app
+ */
+/**
+ * @typedef {Object} Review
+ * @property {number} rating Rating attached to review
+ * @property {String} uname User name
+ * @property {String} summary Review title
+ * @property {String} text Review text
+ * @property {String} date Date of publish
+ */
 
 module.exports = (Interface=>{
     return Interface._properties = {
@@ -70,10 +83,31 @@ module.exports = (Interface=>{
      * Gets app's rating
      * @param {String} name App name
      * @param {number} value "Stars" count (1-5)
-     * @param {function(Error):void} callback Standard NodeJS callback
+     * @param {function(Error, number):void} callback Standard NodeJS callback
      * @return {Void}
      */
     rating(name, callback){
+        // do some stuff
+    }
+    /**
+     * Adds a review to app
+     * @param {String} name App name
+     * @param {ReviewProperties} props Review's properties
+     * @param {String} review Review text
+     * @param {function(Error):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    review(name, props, review, callback){
+        // do some stuff
+    }
+    /**
+     * Gets app's reviews
+     * @param {String} name App name
+     * @param {Array<String>=} langs Langs to load with
+     * @param {function(Error, Array<Review>):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    reviews(name, langs, callback){
         // do some stuff
     }
 })
