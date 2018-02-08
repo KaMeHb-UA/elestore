@@ -137,7 +137,10 @@ var packages = [
 module.exports = (Interface=>{
     return Interface._properties = {
         platform: 'linux',  // false - all platforms
-        arch: false         // false - all archs
+        arch: false,        // false - all archs
+        dependencies : {    // all dependencies needed by plugin, like in package.json
+            // async: "^2.6.0" // <-- JUST EXAMPLE
+        }
     }, Interface
 })(class{
     constructor(){
@@ -157,7 +160,7 @@ module.exports = (Interface=>{
             })
         });
         reviews.forEach(review => {
-            var v = review.version == cache.apps[review.app].version ? 'this' : review.version
+            var v = review.version == cache.apps[review.app].version ? 'this' : review.version;
             cache.apps[review.app].reviews[v] || (cache.apps[review.app].reviews[v] = {});
             cache.apps[review.app].reviews[v][review.lang] || (cache.apps[review.app].reviews[v][review.lang] = []);
             cache.apps[review.app].reviews[v][review.lang].push({
