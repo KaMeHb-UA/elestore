@@ -7,6 +7,7 @@
 /**
  * @typedef {Object} App
  * @property {String} name App name
+ * @property {String} displayName App name
  * @property {String} version App version
  */
 /**
@@ -37,7 +38,7 @@ module.exports = (Interface=>{
     return Interface._properties = {
         platform: 'linux',  // false - all platforms
         arch: false,        // false - all archs
-        dependencies : {    // all dependencies needed by plugin, like in package.json
+        dependencies: {    // all dependencies needed by plugin, like in package.json
             // async: "^2.6.0" // <-- JUST EXAMPLE
         }
     }, Interface
