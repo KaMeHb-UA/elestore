@@ -4,25 +4,30 @@ const {app, BrowserWindow} = require('electron'),
         mkdirp = require('mkdirp'),
         fs = require('fs'),
         pkg = require(path.join(__dirname, 'package.json')),
-        child_process = require('child_process')
+        child_process = require('child_process'),
+        settings = require(path.join(__dirname, 'settings.json'))
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+function loadPage(name){
+    return win.loadURL(url.format({
+		pathname: path.join(__dirname, 'themes', settings.theme, `${name}.html`),
+		protocol: 'file:',
+		slashes: true
+	}))
+}
+
 function createWindow () {
 	// Create the browser window.
 	win = new BrowserWindow({width: 800, height: 600})
 
-	// and load the index.html of the app.
-	win.loadURL(url.format({
-		pathname: path.join(__dirname, 'index.html'),
-		protocol: 'file:',
-		slashes: true
-	}))
+	// and load the startup page of the app.
+    loadPage('startup')
 
 	// Open the DevTools.
-	win.webContents.openDevTools()
+	// win.webContents.openDevTools()
 
 	// Emitted when the window is closed.
 	win.on('closed', () => {
@@ -58,42 +63,54 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-var sourceInterfaces = [], depsUpdated = false;
+var pluginsPath = path.join(__dirname, 'plugins/sources');
 
-fs.readdir(path.join(__dirname, 'plugins/sources'), (err, files) => {
+fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
     files.forEach(file => {
-        if (file != '.' && file != '..' && file != 'source-sample.js') sourceInterfaces.push(require(path.join(__dirname, 'plugins/sources', file)))
+        var sourceInterfaces = [], depsUpdated = false;
+        if (file != '.' && file != '..' && file != 'source-sample.js') sourceInterfaces.push(require(path.join(pluginsPath, file)));
+        sourceInterfaces.forEach(Interface => {
+            if (pkg.dependencies){
+                for(let i in Interface._properties.dependencies){
+                    if (!pkg.dependencies[i]) {
+                        depsUpdated = true;
+                        pkg.dependencies[i] = Interface._properties.dependencies[i];
+                    } else if (Interface._properties.dependencies[i] != pkg.dependencies[i]) throw ReferenceError(`Cannot use system dependence's another version. [${i}: ${Interface._properties.dependencies[i]} != ${pkg.dependencies[i]}]`)
+                }
+            } else {
+                depsUpdated = true;
+                pkg.dependencies = Interface._properties.dependencies
+            }
+        });
+        if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
+            if (err) return console.log(err); else {
+                win.webContents.executeJavaScript('setLoadingStage("Installing new dependencies")');
+                let installer = child_process.spawn('npm', ['install'], {
+                    cwd: __dirname
+                });
+                installer.stdout.on('data', (data) => {
+                    win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data)})`)
+                });
+                installer.on('close', code => {
+                    if (!code){
+                        child_process.spawn('npm', ['start'], {
+                            cwd: __dirname,
+                            detached: true
+                        });
+                        process.exit()
+                    } else win.webContents.executeJavaScript('setLoadingStage("Cannot install deps")')
+                });
+            }
+        }); else {
+            drawInterface();
+        }
     })
 });
-
-sourceInterfaces.forEach(Interface => {
-    if (pkg.dependencies){
-        for(let i in Interface._properties.dependencies){
-            if (!pkg.dependencies[i]) {
-                depsUpdated = true;
-                pkg.dependencies[i] = Interface._properties.dependencies[i];
-            } else if (Interface._properties.dependencies[i] != pkg.dependencies[i]) throw ReferenceError(`Cannot use system dependence's another version. [${i}: ${Interface._properties.dependencies[i]} != ${pkg.dependencies[i]}]`)
-        }
-    } else {
-        depsUpdated = true;
-        pkg.dependencies = Interface._properties.dependencies
+function drawInterface(){
+    try{
+        loadPage('main')
+    } catch(e){
+        setTimeout(drawInterface, 100)
     }
-});
-if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
-    if (err) return console.log(err); else {
-        //installing new dependencies
-        let installer = child_process.spawn('npm', ['install'], {
-            cwd: __dirname
-        });
-        installer.on('close', code => {
-            if (!code){
-                child_process.spawn('npm', ['start'], {
-                    cwd: __dirname,
-                    detached: true
-                });
-                process.exit()
-            } else console.error('Cannot install deps');
-        })
-    }
-});
+}

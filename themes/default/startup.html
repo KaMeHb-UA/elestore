@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title name="loading-stage-title"></title>
+        <link rel="stylesheet" href="css/loading-animation.css"/>
+        <script src="js/translate.js"></script>
+        <script>
+            window.setLoadingStage = (stage) => {
+                document.getElementsByName('loading-stage-title').forEach(element => {
+                    element.innerHTML = __(stage, 'loading stage')
+                })
+            };
+            window.internalConsole = {
+                log: (text) => {
+                    document.getElementsByName('loading-stage-title').forEach(element => {
+                        element.innerHTML += `\n${text}`
+                    })
+                }
+            }
+        </script>
+        <meta charset="UTF-8"><script></script>
+    </head>
+    <body>
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+        <h4 name="loading-stage-title"></h4>
+        <script>setLoadingStage('Application starting...')</script>
+        <pre name="Internal console"></pre>
+    </body>
+</html>
