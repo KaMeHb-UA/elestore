@@ -67,8 +67,8 @@ var pluginsPath = path.join(__dirname, 'plugins/sources');
 
 fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
+    var sourceInterfaces = [], depsUpdated = false;
     files.forEach(file => {
-        var sourceInterfaces = [], depsUpdated = false;
         if (file != '.' && file != '..' && file != 'source-sample.js') sourceInterfaces.push(require(path.join(pluginsPath, file)));
         sourceInterfaces.forEach(Interface => {
             if (pkg.dependencies){
@@ -82,32 +82,37 @@ fs.readdir(pluginsPath, (err, files) => {
                 depsUpdated = true;
                 pkg.dependencies = Interface._properties.dependencies
             }
-        });
-        if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
-            if (err) return console.log(err); else {
-                win.webContents.executeJavaScript('setLoadingStage("Installing new dependencies")');
-                let installer = child_process.spawn('npm', ['install'], {
-                    cwd: __dirname
-                });
-                installer.stdout.on('data', (data) => {
-                    win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data)})`)
-                });
-                installer.on('close', code => {
-                    if (!code){
+        });3
+    });
+    if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
+        if (err) return console.log(err); else {
+            win.webContents.executeJavaScript('setLoadingStage("Installing new dependencies")');
+            let installer = child_process.spawn('npm', ['install'], {
+                cwd: __dirname
+            });
+            installer.stdout.on('data', (data) => {
+                win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data.toString('utf8'))})`)
+            });
+            installer.on('close', code => {
+                if (!code){
+                    let tm = 3000;
+                    win.webContents.executeJavaScript(`internalConsole.log("All done, restart in ${tm/1000} seconds")`)
+                    setTimeout(() => {
                         child_process.spawn('npm', ['start'], {
                             cwd: __dirname,
                             detached: true
                         });
                         process.exit()
-                    } else win.webContents.executeJavaScript('setLoadingStage("Cannot install deps")')
-                });
-            }
-        }); else {
-            drawInterface();
+                    }, tm)
+                } else win.webContents.executeJavaScript('setLoadingStage("Cannot install deps")')
+            });
         }
-    })
+    }); else {
+        drawInterface();
+    }
 });
 function drawInterface(){
+    console.log('requested drawing interface')
     try{
         loadPage('main')
     } catch(e){
