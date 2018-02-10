@@ -95,7 +95,6 @@ fs.readdir(pluginsPath, (err, files) => {
             let installer = child_process.spawn('npm', ['install'], {
                 cwd: __dirname
             });
-            win.webContents.executeJavaScript(`internalConsole.init()`);
             installer.stdout.on('data', (data) => {
                 win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data.toString('utf8'))})`)
             });

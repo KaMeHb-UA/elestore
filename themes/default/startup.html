@@ -6,6 +6,24 @@
         <script src="js/translate.js"></script>
         <!-- NEEDED BY PROGRAM -->
         <script>
+            function normalizeNumber(num){
+                return num < 10 ? '0' + num : num;
+            }
+            function getFormattedDateTime(date){
+                return `${
+                    normalizeNumber(date.getDate())
+                }-${
+                    normalizeNumber(date.getMonth() + 1)
+                }-${
+                    date.getFullYear()
+                } ${
+                    normalizeNumber(date.getHours())
+                }:${
+                    normalizeNumber(date.getMinutes())
+                }:${
+                    normalizeNumber(date.getSeconds())
+                }`
+            }
             window.setLoadingStage = (stage) => {
                 document.getElementsByName('loading-stage-title').forEach(element => {
                     element.innerHTML = __(stage, 'loading stage')
@@ -13,51 +31,37 @@
             };
             window.internalConsole = {
                 log: (text) => {
+                    var now = getFormattedDateTime(new Date());
+                    text = text.replace(/\r?\n/g, '\n | ');
                     document.getElementsByName('Internal console').forEach(element => {
-                        element.innerHTML += `\n${text}`
-                    })
-                },
-                init: ()=>{
-                    document.getElementsByName('Internal console').forEach(element => {
-                        element.parentNode.style.display == 'none' &&
-                        (element.parentNode.style.display = '')
+                        element.innerHTML += `\n<span class="log-date-prefix">${now}</span> | ${text}`
                     })
                 }
-            }
+            };
+
+            setLoadingStage('Application starting...')
         </script>
         <!-- / NEEDED BY PROGRAM -->
-        <meta charset="UTF-8"><script></script>
+        <meta charset="UTF-8">
+        <style>
+            .log-date-prefix{
+                color: #007592;
+                margin-left: -148.2px;
+            }
+        </style>
     </head>
-    <body style="height:100%;margin:0">
-        <div class="progress" style="margin-top:0">
+    <body style="height:100%;margin:0;overflow:hidden">
+        <div class="progress" style="margin-top:0;position:absolute;top:0;width:calc(100% + 4px);left:-2px">
             <div class="indeterminate"></div>
         </div>
-        <h4 name="loading-stage-title" style="margin-left:20px;"></h4>
-        <script>setLoadingStage('Application starting...')</script>
         <div style="
             background-color: #292929;
-            color: #007592;
+            color: #9c9c9c;
             overflow: hidden;
             overflow-y: auto;
-            display: none;
-        "><pre name="Internal console" style="margin:0"></pre></div>
-        <script>
-            var div = document.getElementsByName('Internal console')[0].parentNode,
-                padding = 20,
-                onResize = () => {
-                    div.style.height = `${
-                        window.innerHeight - 
-                        div.getBoundingClientRect().top - 
-                        (padding * 2)
-                    }px`
-                },
-                windowOnResizeOriginal = window.onresize || (() => {});
-            div.style.padding = `${padding}px`;
-            window.onresize = function(){
-                windowOnResizeOriginal.apply(this, arguments);
-                onResize()
-            };
-            setTimeout(onResize, 100)
-        </script>
+            height: calc(100% - 4px);
+            width: 100%;
+            margin-top: 4px;
+        "><pre name="Internal console" style="margin:20px;padding-left:148.2px"></pre></div>
     </body>
 </html>
