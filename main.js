@@ -109,7 +109,7 @@ fs.readdir(pluginsPath, (err, files) => {
                         });
                         process.exit()
                     }, tm)
-                } else win.webContents.executeJavaScript('setLoadingStage("Cannot install deps")')
+                } else win.webContents.executeJavaScript('internalConsole.err("Cannot install dependencies. Check your plugins")')
             });
         }
     }); else {
