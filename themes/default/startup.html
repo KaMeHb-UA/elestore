@@ -4,7 +4,7 @@
         <title name="loading-stage-title"></title>
         <link rel="stylesheet" href="css/loading-animation.css"/>
         <script src="js/translate.js"></script>
-        <!-- NEEDED BY PROGRAM -->
+        <!-- setLoadingStage() && internalConsole ARE NEEDED BY PROGRAM -->
         <script>
             function normalizeNumber(num){
                 return num < 10 ? '0' + num : num;
@@ -24,17 +24,34 @@
                     normalizeNumber(date.getSeconds())
                 }`
             }
+
             window.setLoadingStage = (stage) => {
                 document.getElementsByName('loading-stage-title').forEach(element => {
                     element.innerHTML = __(stage, 'loading stage')
                 })
             };
+
+            function consolePrepare(text, className = null){
+                return className ? `<span class="${className}">${text.replace(/\r?\n/g, `</span>\n | <span class="${className}">`)}</span>` : `${text.replace(/\r?\n/g, `\n | `)}`
+            }
+
             window.internalConsole = {
                 log: (text) => {
                     var now = getFormattedDateTime(new Date());
-                    text = text.replace(/\r?\n/g, '\n | ');
                     document.getElementsByName('Internal console').forEach(element => {
-                        element.innerHTML += `\n<span class="log-date-prefix">${now}</span> | ${text}`
+                        element.innerHTML += `\n<span class="log-date-prefix">${now}</span> | ${consolePrepare(text)}`
+                    })
+                },
+                warn: (text) => {
+                    var now = getFormattedDateTime(new Date());
+                    document.getElementsByName('Internal console').forEach(element => {
+                        element.innerHTML += `\n<span class="log-date-prefix">${now}</span> | ${consolePrepare(text, 'warning-text')}`
+                    })
+                },
+                err: (text) => {
+                    var now = getFormattedDateTime(new Date());
+                    document.getElementsByName('Internal console').forEach(element => {
+                        element.innerHTML += `\n<span class="log-date-prefix">${now}</span> | ${consolePrepare(text, 'error-text')}`
                     })
                 }
             };
@@ -45,8 +62,14 @@
         <meta charset="UTF-8">
         <style>
             .log-date-prefix{
-                color: #007592;
+                color: #008992;
                 margin-left: -148.2px;
+            }
+            .warning-text{
+                color: #a9a927;
+            }
+            .error-text{
+                color: #c51c1c;
             }
         </style>
     </head>
