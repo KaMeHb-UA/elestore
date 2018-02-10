@@ -98,6 +98,9 @@ fs.readdir(pluginsPath, (err, files) => {
             installer.stdout.on('data', (data) => {
                 win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data.toString('utf8'))})`)
             });
+            installer.stderr.on('data', (data) => {
+                win.webContents.executeJavaScript(`internalConsole.err(${JSON.stringify(data.toString('utf8'))})`)
+            });
             installer.on('close', code => {
                 if (!code){
                     let tm = 3000;
