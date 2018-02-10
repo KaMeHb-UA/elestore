@@ -21,10 +21,13 @@ function loadPage(name){
 
 function createWindow () {
 	// Create the browser window.
-	win = new BrowserWindow({width: 800, height: 600})
+	win = new BrowserWindow({
+        width: 800,
+        height: 600
+    })
 
 	// and load the startup page of the app.
-    loadPage('startup')
+    loadPage('startup');
 
 	// Open the DevTools.
 	// win.webContents.openDevTools()
@@ -35,7 +38,9 @@ function createWindow () {
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
 		win = null
-	})
+    });
+    
+    win.setMenu(null)
 }
 
 // This method will be called when Electron has finished
@@ -82,7 +87,7 @@ fs.readdir(pluginsPath, (err, files) => {
                 depsUpdated = true;
                 pkg.dependencies = Interface._properties.dependencies
             }
-        });3
+        });
     });
     if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
         if (err) return console.log(err); else {
@@ -90,6 +95,7 @@ fs.readdir(pluginsPath, (err, files) => {
             let installer = child_process.spawn('npm', ['install'], {
                 cwd: __dirname
             });
+            win.webContents.executeJavaScript(`internalConsole.init()`);
             installer.stdout.on('data', (data) => {
                 win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data.toString('utf8'))})`)
             });
@@ -112,7 +118,6 @@ fs.readdir(pluginsPath, (err, files) => {
     }
 });
 function drawInterface(){
-    console.log('requested drawing interface')
     try{
         loadPage('main')
     } catch(e){
