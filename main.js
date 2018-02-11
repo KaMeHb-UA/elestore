@@ -72,7 +72,7 @@ var pluginsPath = path.join(__dirname, 'plugins/sources');
 
 fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
-    var sourceInterfaces = [], depsUpdated = false;
+    var sourceInterfaces = [], depsUpdated = false, internalErr = false;
     files.forEach(file => {
         if (file != '.' && file != '..' && file != 'source-sample.js') sourceInterfaces.push(require(path.join(pluginsPath, file)));
         sourceInterfaces.forEach(Interface => {
@@ -81,7 +81,10 @@ fs.readdir(pluginsPath, (err, files) => {
                     if (!pkg.dependencies[i]) {
                         depsUpdated = true;
                         pkg.dependencies[i] = Interface._properties.dependencies[i];
-                    } else if (Interface._properties.dependencies[i] != pkg.dependencies[i]) throw ReferenceError(`Cannot use system dependence's another version. [${i}: ${Interface._properties.dependencies[i]} != ${pkg.dependencies[i]}]`)
+                    } else if (Interface._properties.dependencies[i] != pkg.dependencies[i]){
+                        internalErr = true;
+                        (function tmp(){win && win.webContents ? win.webContents.executeJavaScript(`internalConsole.err(${JSON.stringify(`Cannot use system dependence's another version. [${i}: ${Interface._properties.dependencies[i]} != ${pkg.dependencies[i]}]`)})`) : setTimeout(tmp, 100)})()
+                    }
                 }
             } else {
                 depsUpdated = true;
@@ -115,7 +118,7 @@ fs.readdir(pluginsPath, (err, files) => {
                 } else win.webContents.executeJavaScript('internalConsole.err("Cannot install dependencies. Check your plugins")')
             });
         }
-    }); else {
+    }); else if(!internalErr){
         drawInterface();
     }
 });
