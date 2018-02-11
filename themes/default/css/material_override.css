@@ -1,5 +1,11 @@
+:root{
+    --theme-color: #00c1b1;
+}
+*:focus {
+    outline: none;
+}
 header .mdl-layout__header-row, header .mdl-layout__drawer-button{
-    background-color: #00d6c4 !important;
+    background-color: var(--theme-color) !important;
 }
 .mdl-layout__header-row > .mdl-layout-spacer{
     background: white;
@@ -17,4 +23,47 @@ header .mdl-layout__header-row, header .mdl-layout__drawer-button{
     position: absolute;
     margin-top: 6px;
     margin-left: 4px;
+}
+.line-header-on-main{
+    width: 100%;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+}
+.line-item-on-main{
+    height: 200px;
+    background: url(../images/app-default.png);
+    background-size: cover;
+    position: relative;
+    cursor: pointer;
+    background-position: center;
+}
+.line-item-on-main .bottom-heading{
+    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    width: calc(100% - 20px);
+    bottom: 0;
+    height: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+.line-header-on-main button{
+    background: var(--theme-color);
+    border: 0;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: -9px;
+    font-size: 16px;
+    margin-right: 8px;
+    position: absolute;
+    right: 0;
+    font-weight: bold;
+}
+.line-header-on-main{
+    text-transform: uppercase;
+}
+#hdrbtn, header > .mdl-layout__drawer-button > i.material-icons{
+    color: white;
 }

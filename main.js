@@ -23,7 +23,9 @@ function createWindow () {
 	// Create the browser window.
 	win = new BrowserWindow({
         width: 800,
-        height: 600
+        height: 600,
+        minHeight: 400,
+        minWidth: 500
     })
 
 	// and load the startup page of the app.
