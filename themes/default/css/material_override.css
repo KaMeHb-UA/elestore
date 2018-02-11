@@ -1,0 +1,20 @@
+header .mdl-layout__header-row, header .mdl-layout__drawer-button{
+    background-color: #00d6c4 !important;
+}
+.mdl-layout__header-row > .mdl-layout-spacer{
+    background: white;
+    margin-right: 48px;
+}
+.mdl-layout__header-row > .mdl-layout-spacer > input[name="search"]{
+    border: 0;
+    height: 34px;
+    width: 100%;
+    padding: 0 10px 0 28px;
+    font-size: 20px;
+    color: #757575;
+}
+.mdl-layout__header-row > .mdl-layout-spacer > .material-icons{
+    position: absolute;
+    margin-top: 6px;
+    margin-left: 4px;
+}
