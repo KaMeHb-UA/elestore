@@ -67,3 +67,6 @@ header .mdl-layout__header-row, header .mdl-layout__drawer-button{
 #hdrbtn, header > .mdl-layout__drawer-button > i.material-icons{
     color: white;
 }
+header + .mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-50.is-visible + main{
+    padding-right: 15px;
+}
