@@ -117,4 +117,13 @@ module.exports = (Interface=>{
         !callback && (typeof langs == 'function') && (callback = langs, langs = false) // if langs is not defined
         // do some stuff
     }
+    /**
+     * Installs an app
+     * @param {String} name App name
+     * @param {function(Error):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    install(name, callback){
+        // do some stuff
+    }
 })

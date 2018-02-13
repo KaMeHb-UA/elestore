@@ -107,4 +107,12 @@ module.exports = class{
             });
         }
     }
+    install(app, callback){
+        if(checkApp(app, callback)){
+            let sn = app.getSource().name;
+            sources.forEach(source => {
+                if (source.name == sn) source.install(app.name, callback)
+            });
+        }
+    }
 }

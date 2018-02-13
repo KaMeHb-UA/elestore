@@ -34,6 +34,11 @@
  * @property {String} date Date of publish
  */
 
+function getRandomArbitrary(min, max){
+    return Math.random() * (max - min) + min;
+}
+  
+
 var packages = [
         {
             name: 'pseudopkg-0',
@@ -424,5 +429,16 @@ module.exports = (Interface=>{
             )
         }
         callback(null, tmp)
+    }
+    /**
+     * Installs an app
+     * @param {String} name App name
+     * @param {function(Error):void} callback Standard NodeJS callback
+     * @return {Void}
+     */
+    install(name, callback){
+        setTimeout(function(){
+            callback(null);
+        }, getRandomArbitrary(5, 20));
     }
 })
