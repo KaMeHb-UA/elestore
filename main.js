@@ -1,11 +1,11 @@
 const {app, BrowserWindow} = require('electron'),
-		path = require('path'),
-		url = require('url'),
-        mkdirp = require('mkdirp'),
-        fs = require('fs'),
-        pkg = require(path.join(__dirname, 'package.json')),
-        child_process = require('child_process'),
-        settings = require(path.join(__dirname, 'settings.json'))
+    path = require('path'),
+    url = require('url'),
+    mkdirp = require('mkdirp'),
+    fs = require('fs'),
+    pkg = require(path.join(__dirname, 'package.json')),
+    child_process = require('child_process'),
+    settings = require(path.join(__dirname, 'settings.json'))
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -16,7 +16,9 @@ function loadPage(name){
 		pathname: path.join(__dirname, 'themes', settings.theme, `${name}.html`),
 		protocol: 'file:',
 		slashes: true
-	}))
+	}), {
+        API: require(path.join(__dirname, 'plugins/api.js'))
+    })
 }
 
 function createWindow () {
@@ -32,7 +34,7 @@ function createWindow () {
     loadPage('startup');
 
 	// Open the DevTools.
-	// win.webContents.openDevTools()
+	win.webContents.openDevTools()
 
 	// Emitted when the window is closed.
 	win.on('closed', () => {
@@ -41,7 +43,7 @@ function createWindow () {
 		// when you should delete the corresponding element.
 		win = null
     });
-    
+
     win.setMenu(null)
 }
 
@@ -121,6 +123,7 @@ fs.readdir(pluginsPath, (err, files) => {
             });
         }
     }); else if(!internalErr){
+        global.API = new (require(path.join(__dirname, 'plugins/api.js')))(sourceInterfaces);
         drawInterface();
     }
 });
