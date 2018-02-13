@@ -1,18 +1,17 @@
 ﻿var sources = [];
-function setUpPromise(asyncFunction){
+function setUpPromise(asyncFunction, thisArg){
     return function(){
-        var _this = this,
-            args = arguments;
+        var args = arguments;
         args.push = val => {
             args[args.length++] = val;
         }
         return new Promise(function(resolve, reject){
-            asyncFunction.apply(_this, (args.push(function(){
+            asyncFunction.apply(thisArg, (args.push(function(){
                 var err = arguments[0], i, neededArgs = [];
                 for(i = 1; i < arguments.length; i++){
                     neededArgs.push(arguments[i])
                 }
-                if(!err) resolve.apply(_this, neededArgs); else reject.apply(_this, err)
+                if(!err) resolve.apply(thisArg, neededArgs); else reject.apply(thisArg, err)
             }), args))
         })
     }
@@ -35,7 +34,7 @@ module.exports = class{
         (temp => {
             temp = this.getApps;
             this.getApps = function(props, callback){
-                if(!callback) return setUpPromise(this.getApps)(props); else temp(props, callback);
+                if(!callback) return setUpPromise(this.getApps, this)(props); else temp(props, callback);
             }
         })();
     }
