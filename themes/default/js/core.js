@@ -9,11 +9,9 @@ API.getApps({}, (err, apps) => {
     } else console.error(err);
 });
 console.log(API.getApps({}))
-API.getApps({})
-    .then(apps => {
-        console.log('apps got in promise!');
-        console.log(apps)
-    })
-    .catch(err => {
-        console.error(err)
-    })
+API.getApps({}).then(apps => {
+    console.log('apps got in promise!');
+    console.log(apps)
+}).catch(err => {
+    console.error(err)
+})

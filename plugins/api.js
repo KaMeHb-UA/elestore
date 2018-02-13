@@ -16,7 +16,12 @@ function setUpPromise(asyncFunction, thisArg){
         })
     }
 }
-
+function checkApp(app, callback){
+    if(!app || !app.getSource){
+        callback(new Error('app has no method getSource()'));
+        return false;
+    } else return true;
+}
 var cache = {};
 
 module.exports = class{
@@ -34,7 +39,19 @@ module.exports = class{
         (temp => {
             temp = this.getApps;
             this.getApps = function(props, callback){
-                if(!callback) return setUpPromise(this.getApps, this)(props); else temp(props, callback);
+                if(!callback) return setUpPromise(temp, this)(props); else temp(props, callback);
+            }
+        })();
+        (temp => {
+            temp = this.getRating;
+            this.getRating = function(app, callback){
+                if(!callback) return setUpPromise(temp, this)(app); else temp(app, callback);
+            }
+        })();
+        (temp => {
+            temp = this.getImages;
+            this.getImages = function(app, callback){
+                if(!callback) return setUpPromise(temp, this)(app); else temp(app, callback);
             }
         })();
     }
@@ -57,5 +74,37 @@ module.exports = class{
                 } else callback(err)
             })
         })
+    }
+    getRating(app, callback){
+        if(checkApp(app, callback)){
+            let sn = app.getSource().name;
+            sources.forEach(source => {
+                if (source.name == sn) source.rating(app.name, callback)
+            });
+        }
+    }
+    getImages(app, callback){
+        if(checkApp(app, callback)){
+            let sn = app.getSource().name;
+            sources.forEach(source => {
+                if (source.name == sn) source.images(app.name, callback)
+            });
+        }
+    }
+    getNeededSpace(app, callback){
+        if(checkApp(app, callback)){
+            let sn = app.getSource().name;
+            sources.forEach(source => {
+                if (source.name == sn) source.space(app.name, callback)
+            });
+        }
+    }
+    getReviews(app, callback){
+        if(checkApp(app, callback)){
+            let sn = app.getSource().name;
+            sources.forEach(source => {
+                if (source.name == sn) source.reviews(app.name, callback)
+            });
+        }
     }
 }
