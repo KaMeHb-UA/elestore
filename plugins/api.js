@@ -1,7 +1,7 @@
 ﻿var sources = [];
-function setUpPromise(asyncFunction, thisArg){
+function setUpPromise(asyncFunction){
     return function(){
-        var args = arguments;
+        var args = arguments, thisArg = this;
         args.push = val => {
             args[args.length++] = val;
         }
@@ -40,7 +40,7 @@ module.exports = class{
             list.forEach(method => {
                 var temp = this[method];
                 this[method] = function(){
-                    if (temp.length == arguments.length) temp.apply(this, arguments); else return setUpPromise(temp, this)(arguments)
+                    if (temp.length == arguments.length) temp.apply(this, arguments); else return setUpPromise(temp).apply(this, arguments)
                 }
             })
         })([
@@ -93,17 +93,14 @@ module.exports = class{
         })
     }
     getRating(app, callback){
-        if(!app.getSource) app = app[0];
-        console.log('APP:');
-        console.log(app);
+        //if(!app.getSource && app[0].getSource) app = app[0];
+
         if(checkApp(app, callback)){
             let sn = app.getSource().name;
             sources.forEach(source => {
-                console.log(`${sn} VS ${source.name}`);
                 if (source.name == sn){
-                    console.log('YES')
                     source.rating(app.name, callback)
-                } else console.log('NO')
+                }
             });
         } else console.log('checkApp() failed');
     }
