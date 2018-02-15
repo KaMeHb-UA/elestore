@@ -36,24 +36,21 @@ module.exports = class{
                 })(new source()));
             }
         });
-        (temp => {
-            temp = this.getApps;
-            this.getApps = function(props, callback){
-                if(!callback) return setUpPromise(temp, this)(props); else temp(props, callback);
-            }
-        })();
-        (temp => {
-            temp = this.getRating;
-            this.getRating = function(app, callback){
-                if(!callback) return setUpPromise(temp, this)(app); else temp(app, callback);
-            }
-        })();
-        (temp => {
-            temp = this.getImages;
-            this.getImages = function(app, callback){
-                if(!callback) return setUpPromise(temp, this)(app); else temp(app, callback);
-            }
-        })();
+        (list => {
+            list.forEach(method => {
+                var temp = this[method];
+                this[method] = function(){
+                    if (temp.length == arguments.length) temp.apply(this, arguments); else return setUpPromise(temp, this)(arguments)
+                }
+            })
+        })([
+            'getApps',
+            'getRating',
+            'getImages',
+            'getNeededSpace',
+            'getReviews',
+            'install',
+        ])
     }
     getApps(props, callback){
         props = props || {};
