@@ -6,13 +6,14 @@ function setUpPromise(asyncFunction){
             args[args.length++] = val;
         }
         return new Promise(function(resolve, reject){
-            asyncFunction.apply(thisArg, (args.push(function(){
+            args.push(function(){
                 var err = arguments[0], i, neededArgs = [];
                 for(i = 1; i < arguments.length; i++){
                     neededArgs.push(arguments[i])
                 }
-                if(!err) resolve.apply(thisArg, neededArgs); else reject.apply(thisArg, err)
-            }), args))
+                if(!err) resolve(...neededArgs); else reject(err)
+            });
+            asyncFunction(...args)
         })
     }
 }
@@ -87,14 +88,12 @@ module.exports = class{
                         };
                         appsDB.push(app)
                     });
-                    if (sources.length == ++done) callback(null, appsDB)
+                    if (sources.length == ++done) callback(null, appsDB, 1)
                 } else callback(err)
             })
         })
     }
     getRating(app, callback){
-        //if(!app.getSource && app[0].getSource) app = app[0];
-
         if(checkApp(app, callback)){
             let sn = app.getSource().name;
             sources.forEach(source => {

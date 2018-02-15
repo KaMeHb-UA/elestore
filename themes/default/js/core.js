@@ -11,8 +11,9 @@ API.getApps({}, (err, apps) => {
         console.log(apps);
     } else console.error(err);
 });
-API.getApps({}).then(apps => {
+API.getApps({}).then((apps, secArg) => {
     var done = 0;
+    console.log(secArg);
     apps.forEach((app, i) => {
         API.getRating(app).then(rating=>{
             apps[i].rating = rating;
