@@ -52,9 +52,29 @@ module.exports = class{
             'install',
         ])
     }
+    /*/-------------------------------------------------------\*\
+    |/                                                         \|
+    |        Preparation done. Next, describing methods         |
+    |\                                                         /|
+    \*\-------------------------------------------------------/*/
     getApps(props, callback){
         props = props || {};
         var appsDB = [], done = 0;
+        appsDB.sortBy = prop => {
+            if(typeof prop != 'string') return new TypeError('prop arg is not of type string');
+            var expl = false;
+            appsDB.forEach(app => {
+                if(!expl){
+                    if(typeof app[prop] != 'number') expl = true;
+                }
+            });
+            if(expl) return new TypeError(`app[${JSON.stringify(prop)}] is not of type number`); else {
+                let newArr = appsDB.sort((app1, app2) => {
+                    return app2[prop] - app1[prop]
+                });
+                return newArr.sortBy = appsDB.sortBy, newArr;
+            }
+        };
         sources.forEach((source, index) => {
             source.list((err, apps)=>{
                 if(!err){
@@ -73,12 +93,19 @@ module.exports = class{
         })
     }
     getRating(app, callback){
+        if(!app.getSource) app = app[0];
+        console.log('APP:');
+        console.log(app);
         if(checkApp(app, callback)){
             let sn = app.getSource().name;
             sources.forEach(source => {
-                if (source.name == sn) source.rating(app.name, callback)
+                console.log(`${sn} VS ${source.name}`);
+                if (source.name == sn){
+                    console.log('YES')
+                    source.rating(app.name, callback)
+                } else console.log('NO')
             });
-        }
+        } else console.log('checkApp() failed');
     }
     getImages(app, callback){
         if(checkApp(app, callback)){

@@ -87,7 +87,6 @@ module.exports = (Interface=>{
     /**
      * Gets app's rating
      * @param {String} name App name
-     * @param {number} value "Stars" count (1-5)
      * @param {function(Error, number):void} callback Standard NodeJS callback
      * @return {Void}
      */
