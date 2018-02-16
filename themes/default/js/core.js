@@ -116,7 +116,6 @@ const applyImgToBg = setUpPromise(function(image, element, callback){
 
 function drawApps(apps, section){
     document.querySelector(`section#${section}`).querySelectorAll('[role="app-container"]').forEach((element, index) => {
-        console.log([element, apps[index]]);
         element.querySelector('.rating').innerHTML = '<div class="stars-bg">✩✩✩✩✩</div><div class="stars-fg" style="color:#a7a7a7;">★★★★★</div>';
         apps[index].drawRating = rating => {
             element.querySelector('.rating > .stars-fg').removeAttribute('style');

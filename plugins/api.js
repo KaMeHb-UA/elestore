@@ -58,7 +58,7 @@ module.exports = class{
         this.toInit = [
 
             `window.appsDB = eval(${JSON.stringify(`(()=>{${appsDB.toString()};return appsDB})()`)})`,
-            `window.setUpPromise = eval(${JSON.stringify(`(()=>{${setUpPromise.toString()};return setUpPromise})()`)})`
+            `window.setUpPromise = eval(${JSON.stringify(`(()=>{${setUpPromise.toString()};return setUpPromise})()`)})`,
 
         ].join(';');
         (list => {
@@ -84,7 +84,6 @@ module.exports = class{
     \*\-------------------------------------------------------/*/
     getApps(props, callback){
         props = props || {};
-        console.log('getApps called with props ' + JSON.stringify(props));
         var appsDB = [], done = 0;
         sources.forEach((source, index) => {
             source.list(props, (err, apps)=>{
@@ -111,7 +110,7 @@ module.exports = class{
                     source.rating(app.name, callback)
                 }
             });
-        } else console.log('checkApp() failed');
+        }
     }
     getImages(app, callback){
         if(checkApp(app, callback)){

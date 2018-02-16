@@ -351,7 +351,7 @@ module.exports = (Interface=>{
         const request = require('request');
 
         request('https://randomuser.me/api/', { json: true }, (err, res, data) => {
-            if(err) return console.log(err);
+            if(err) return console.error(err);
             cache.me.uname = `${data.results[0].name.first.slice(0, 1).toUpperCase() + data.results[0].name.first.slice(1)} ${data.results[0].name.last.slice(0, 1).toUpperCase() + data.results[0].name.last.slice(1)}`;
             cache.me.picture = data.results[0].picture.thumbnail
         });
@@ -372,8 +372,6 @@ module.exports = (Interface=>{
             if (params.installed !== undefined && cache.apps[i].installed != params.installed) conditions = false;
             if (conditions && params.ratings && !(params.ratings.indexOf(cache.apps[i].rating) + 1)) conditions = false;
             if (conditions && params.categories && !(a => {
-                console.log(params);
-                console.log(cache.apps[i]);
                 params.categories.forEach(category => {
                     cache.apps[i].categories.forEach(targetCategory => {
                         category == targetCategory && (a = true)
