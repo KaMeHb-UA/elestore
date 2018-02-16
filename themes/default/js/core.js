@@ -50,11 +50,53 @@ API.getApps({}).then(apps => {
     apps = new appsDB(...apps);
     var done = 0;
     apps.forEach((app, i) => {
-        API.getRating(app).then(rating=>{
+        API.getRating(app).then(rating => {
             apps[i].rating = rating;
             if(apps.length == ++done){
                 apps.sortBy('rating');
                 drawApps(apps, 'best')
+            }
+        }).catch(err)
+    })
+}).catch(err);
+
+API.getApps({categories: ['Games']}).then(apps => {
+    apps = new appsDB(...apps);
+    var done = 0;
+    apps.forEach((app, i) => {
+        API.getRating(app).then(rating => {
+            apps[i].rating = rating;
+            if(apps.length == ++done){
+                apps.sortBy('rating');
+                drawApps(apps, 'games')
+            }
+        }).catch(err)
+    })
+}).catch(err);
+
+API.getApps({categories: ['Internet']}).then(apps => {
+    apps = new appsDB(...apps);
+    var done = 0;
+    apps.forEach((app, i) => {
+        API.getRating(app).then(rating => {
+            apps[i].rating = rating;
+            if(apps.length == ++done){
+                apps.sortBy('rating');
+                drawApps(apps, 'internet')
+            }
+        }).catch(err)
+    })
+}).catch(err);
+
+API.getApps({categories: ['Office']}).then(apps => {
+    apps = new appsDB(...apps);
+    var done = 0;
+    apps.forEach((app, i) => {
+        API.getRating(app).then(rating => {
+            apps[i].rating = rating;
+            if(apps.length == ++done){
+                apps.sortBy('rating');
+                drawApps(apps, 'office')
             }
         }).catch(err)
     })
@@ -75,8 +117,14 @@ const applyImgToBg = setUpPromise(function(image, element, callback){
 function drawApps(apps, section){
     document.querySelector(`section#${section}`).querySelectorAll('[role="app-container"]').forEach((element, index) => {
         console.log([element, apps[index]]);
-        element.querySelector('.rating').innerHTML = '<div class="stars-bg">✩✩✩✩✩</div><div class="stars-fg">★★★★★</div>';
-        element.querySelector('.rating > .stars-fg').style.width = `${UI.rating.calcWidth(apps[index].rating)}px`;
+        element.querySelector('.rating').innerHTML = '<div class="stars-bg">✩✩✩✩✩</div><div class="stars-fg" style="color:#a7a7a7;">★★★★★</div>';
+        apps[index].drawRating = rating => {
+            element.querySelector('.rating > .stars-fg').removeAttribute('style');
+            element.querySelector('.rating > .stars-fg').style.width = `${UI.rating.calcWidth(apps[index].rating)}px`;
+        }
+        if(!apps[index].rating) API.getRating(apps[index]).then(rating => {
+            apps[index].drawRating(rating)
+        }); else apps[index].drawRating(apps[index].rating);
         element.querySelector('.bottom-heading').innerHTML = apps[index].displayName || apps[index].name;
         API.getImages(apps[index]).then(images => {
             if(images[0]){

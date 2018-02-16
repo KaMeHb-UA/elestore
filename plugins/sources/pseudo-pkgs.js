@@ -171,28 +171,28 @@ var packages = [
     ],
     categories = {
         'pseudopkg-0': [
-            'Administrative',
-            'Media',
+            'Games',
+            'Internet',
         ],
         'pseudopkg-1': [
-            'Text',
-            'Media',
+            'Office',
+            'Internet',
         ],
         'pseudopkg-2': [
             'Tools',
-            'Media',
+            'Internet',
         ],
         'pseudopkg-3': [
             'Tools',
-            'Administrative',
+            'Games',
         ],
         'pseudopkg-4': [
             'Tools',
-            'Text',
+            'Office',
         ],
         'pseudopkg-5': [
-            'Administrative',
-            'Text',
+            'Games',
+            'Office',
         ],
     },
     displayNames = {

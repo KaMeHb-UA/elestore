@@ -59,6 +59,7 @@ module.exports = class{
 
             `window.appsDB = eval(${JSON.stringify(`(()=>{${appsDB.toString()};return appsDB})()`)})`,
             `window.setUpPromise = eval(${JSON.stringify(`(()=>{${setUpPromise.toString()};return setUpPromise})()`)})`
+
         ].join(';');
         (list => {
             list.forEach(method => {
@@ -83,9 +84,10 @@ module.exports = class{
     \*\-------------------------------------------------------/*/
     getApps(props, callback){
         props = props || {};
+        console.log('getApps called with props ' + JSON.stringify(props));
         var appsDB = [], done = 0;
         sources.forEach((source, index) => {
-            source.list((err, apps)=>{
+            source.list(props, (err, apps)=>{
                 if(!err){
                     apps.forEach(app => {
                         app.getSource = () => {
