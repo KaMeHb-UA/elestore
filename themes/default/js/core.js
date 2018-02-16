@@ -3,6 +3,18 @@ const remote = require('electron').remote,
 
 eval(API.toInit);
 
+var UI = {
+    rating: {
+        starWidth: 17,
+        starSpacing: 2,
+        calcWidth: rating => {
+            return UI.rating.starSpacing +
+                Math.floor(rating) * (UI.rating.starWidth + UI.rating.starSpacing * 2) +
+                (rating - Math.floor(rating)) * UI.rating.starWidth
+        }
+    }
+};
+
 function err(e){
     console.error(e);
 }
@@ -63,6 +75,8 @@ const applyImgToBg = setUpPromise(function(image, element, callback){
 function drawApps(apps, section){
     document.querySelector(`section#${section}`).querySelectorAll('[role="app-container"]').forEach((element, index) => {
         console.log([element, apps[index]]);
+        element.querySelector('.rating').innerHTML = '<div class="stars-bg">✩✩✩✩✩</div><div class="stars-fg">★★★★★</div>';
+        element.querySelector('.rating > .stars-fg').style.width = `${UI.rating.calcWidth(apps[index].rating)}px`;
         element.querySelector('.bottom-heading').innerHTML = apps[index].displayName || apps[index].name;
         API.getImages(apps[index]).then(images => {
             if(images[0]){
