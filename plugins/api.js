@@ -1,7 +1,7 @@
-﻿var sources = [];
+﻿var sources = [], cache = {};
 function setUpPromise(asyncFunction){
     return function(){
-        var args = arguments, thisArg = this;
+        var args = arguments;
         args.push = val => {
             args[args.length++] = val;
         }
@@ -23,7 +23,25 @@ function checkApp(app, callback){
         return false;
     } else return true;
 }
-var cache = {};
+class appsDB extends Array{
+    constructor(){
+        super(...arguments);
+    }
+    sortBy(prop){
+        if(typeof prop != 'string') return new TypeError('prop arg is not of type string');
+        var expl = false;
+        this.forEach(app => {
+            if(!expl){
+                if(typeof app[prop] != 'number') expl = true;
+            }
+        });
+        if(expl) return new TypeError(`app[${JSON.stringify(prop)}] is not of type number`); else {
+            return new appsDB(...(this.sort((app1, app2) => {
+                return app2[prop] - app1[prop]
+            })))
+        }
+    }
+}
 
 module.exports = class{
     constructor(sourceInterfaces){
@@ -37,6 +55,11 @@ module.exports = class{
                 })(new source()));
             }
         });
+        this.toInit = [
+
+            `window.appsDB = eval(${JSON.stringify(`(()=>{${appsDB.toString()};return appsDB})()`)})`,
+            `window.setUpPromise = eval(${JSON.stringify(`(()=>{${setUpPromise.toString()};return setUpPromise})()`)})`
+        ].join(';');
         (list => {
             list.forEach(method => {
                 var temp = this[method];
@@ -61,21 +84,6 @@ module.exports = class{
     getApps(props, callback){
         props = props || {};
         var appsDB = [], done = 0;
-        appsDB.sortBy = prop => {
-            if(typeof prop != 'string') return new TypeError('prop arg is not of type string');
-            var expl = false;
-            appsDB.forEach(app => {
-                if(!expl){
-                    if(typeof app[prop] != 'number') expl = true;
-                }
-            });
-            if(expl) return new TypeError(`app[${JSON.stringify(prop)}] is not of type number`); else {
-                let newArr = appsDB.sort((app1, app2) => {
-                    return app2[prop] - app1[prop]
-                });
-                return newArr.sortBy = appsDB.sortBy, newArr;
-            }
-        };
         sources.forEach((source, index) => {
             source.list((err, apps)=>{
                 if(!err){
@@ -88,7 +96,7 @@ module.exports = class{
                         };
                         appsDB.push(app)
                     });
-                    if (sources.length == ++done) callback(null, appsDB, 1)
+                    if (sources.length == ++done) callback(null, appsDB)
                 } else callback(err)
             })
         })
