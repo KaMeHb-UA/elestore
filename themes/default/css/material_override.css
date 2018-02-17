@@ -8,16 +8,10 @@ header .mdl-layout__header-row, header .mdl-layout__drawer-button{
     background-color: var(--theme-color) !important;
 }
 .mdl-layout__header-row > .mdl-layout-spacer{
-    background: white;
     margin-right: 48px;
 }
-.mdl-layout__header-row > .mdl-layout-spacer > input[name="search"]{
-    border: 0;
-    height: 34px;
-    width: 100%;
-    padding: 0 10px 0 28px;
-    font-size: 20px;
-    color: #757575;
+.mdl-layout__header-row > .mdl-layout-spacer{
+    position: relative;
 }
 .mdl-layout__header-row > .mdl-layout-spacer > .material-icons{
     position: absolute;
@@ -115,4 +109,108 @@ header + .mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-
     letter-spacing: 0.25px;
     color: #ffda47;
     overflow: hidden;
+}
+/* form starting stylings ------------------------------- */
+.group[name="search"]{ 
+    position: relative; 
+    margin-bottom: 45px; 
+    top: 25px;
+}
+[name="search"] input{
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 300px;
+    border: none;
+    border-bottom: 1px solid #e6e6e6;
+    background: transparent;
+    color: #fff;
+}
+[name="search"] input:focus{
+    outline:none;
+}
+
+/* LABEL ======================================= */
+[name="search"] label{
+    color: #fff; 
+    font-size: 18px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 2px;
+    transition:0.2s ease all; 
+    -moz-transition:0.2s ease all; 
+    -webkit-transition:0.2s ease all;
+}
+[name="search"] label .material-icons{
+    position: relative;
+    top: 7px;
+}
+
+/* active state */
+[name="search"] input:focus ~ label, [name="search"] input:valid ~ label{
+    top: -13px;
+    font-size: 14px;
+    color: #fff;
+}
+[name="search"] input:focus ~ label .material-icons, [name="search"] input:valid ~ label .material-icons{
+    top: 4px;
+    font-size: 18px;
+    left: 1px;
+}
+
+/* BOTTOM BARS ================================= */
+[name="search"] .bar{
+    position: relative;
+    display: block;
+    width: 315px;
+    top: 1px;
+}
+[name="search"] .bar:before, .bar:after{
+    content: '';
+    height: 2px; 
+    width: 0;
+    bottom: 1px; 
+    position: absolute;
+    background: #fff;
+    transition: 0.2s ease all;
+}
+[name="search"] .bar:before{
+    left: 50%;
+}
+[name="search"] .bar:after{
+    right: 50%; 
+}
+
+/* active state */
+[name="search"] input:focus ~ .bar:before,[name="search"] input:focus ~ .bar:after{
+    width: 50%;
+}
+
+/* HIGHLIGHTER ================================== */
+[name="search"] .highlight{
+    position:absolute;
+    height: 60%; 
+    width: 100px; 
+    top: 25%; 
+    left: 0;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* active state */
+[name="search"] input:focus ~ .highlight{
+    -webkit-animation: inputHighlighter 0.3s ease;
+    -moz-animation: inputHighlighter 0.3s ease;
+    animation: inputHighlighter 0.3s ease;
+}
+@keyframes inputHighlighter{
+    from{
+        background: #fff;
+    }
+    to{
+        width: 0;
+        background: transparent;
+    }
 }
