@@ -114,8 +114,72 @@ const applyImgToBg = setUpPromise(function(image, element, callback){
     }).catch(callback);
 });
 
+
+//********************************From StackOverflow*******************************************//
+function guidGenerator() {
+    var S4 = function() {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+//*********************************************************************************************//
+var uniqueID = {
+    generate: () => {
+        return uniqueID.last = guidGenerator()
+    }
+}
+
+function createElement(props = {}){
+    props.name = props.name || 'div';
+    props.attrs = props.attrs || {};
+    props.html = props.html || '';
+    var tmp = document.createElement(props.name);
+    tmp.innerHTML = props.html;
+    for (var i in props.attrs){
+        tmp.setAttribute(i, props.attrs[i])
+    }
+    return tmp
+}
+
 function drawApps(apps, section){
     document.querySelector(`section#${section}`).querySelectorAll('[role="app-container"]').forEach((element, index) => {
+        (menuItems => {
+            var tmp = guidGenerator(), tmp2, btn = createElement({
+                name: 'button',
+                attrs: {
+                    class: 'mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon',
+                    id: tmp
+                },
+                html: '<i class="material-icons">more_vert</i>'
+            });
+            element.appendChild(btn);
+            tmp = createElement({
+                name: 'ul',
+                attrs: {
+                    class: 'mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right',
+                    for: tmp
+                }
+            });
+            for (let i in menuItems){
+                tmp2 = createElement({
+                    name: 'li',
+                    html: i
+                });
+                tmp2.onclick = ()=>{
+                    menuItems[i]();
+                    btn.click();
+                };
+                tmp.appendChild(tmp2)
+            }
+            element.appendChild(tmp)
+        })({
+            //menu items
+            "About": ()=>{},
+            "Contact": ()=>{
+                console.log('Clicked "Contact" on app')
+            },
+            "Legal information": ()=>{},
+        });
         element.querySelector('.rating').innerHTML = '<div class="stars-bg">✩✩✩✩✩</div><div class="stars-fg" style="color:#a7a7a7;">★★★★★</div>';
         apps[index].drawRating = rating => {
             element.querySelector('.rating > .stars-fg').removeAttribute('style');
@@ -124,7 +188,13 @@ function drawApps(apps, section){
         if(!apps[index].rating) API.getRating(apps[index]).then(rating => {
             apps[index].drawRating(rating)
         }); else apps[index].drawRating(apps[index].rating);
-        element.querySelector('.bottom-heading').innerHTML = apps[index].displayName || apps[index].name;
+        element.querySelector('.bottom-heading').innerHTML = `<img class="source-icon" src="${
+            apps[index].getSource().icon
+        }" title="${
+            apps[index].getSource().name
+        }">${
+            apps[index].displayName || apps[index].name
+        }`;
         API.getImages(apps[index]).then(images => {
             if(images[0]){
                 element.classList.add('loading');

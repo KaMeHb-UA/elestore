@@ -214,3 +214,14 @@ header + .mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-
         background: transparent;
     }
 }
+.bottom-heading .source-icon{
+    height: 16px;
+    margin-right: 10px;
+}
+[role="app-container"] > button.mdl-button.mdl-js-button.mdl-js-ripple-effect.mdl-button--icon{
+    position: absolute;
+    right: 0;
+}
+[role="app-container"] > div.mdl-menu__container.is-upgraded.is-visible{
+    padding-left: 7px;
+}
