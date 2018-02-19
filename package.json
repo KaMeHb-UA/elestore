@@ -1,11 +1,33 @@
 {
-    "name": "elestore",
-    "version": "0.0.0",
-    "main": "main.js",
-    "scripts": {
-        "start": "electron ."
-    },
-    "dependencies": {
-        "mkdirp": "^0.5.1"
+  "name": "elestore",
+  "version": "0.0.0",
+  "author": "Vladislav Marchenko <marlock@etlgr.com> (https://github.com/KaMeHb-UA)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^20.0.5"
+  },
+  "build": {
+    "appId": "org.bassteam.elestore",
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "ia32",
+            "armv7l",
+            "arm64"
+          ]
+        }
+      ]
     }
+  }
 }

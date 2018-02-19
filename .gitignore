@@ -8,3 +8,4 @@ node_modules
 #Тесты
 test
 package-lock.json
+yarn.lock
