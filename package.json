@@ -6,13 +6,18 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "build": "yarn dist",
+    "test": "electron-builder && dist/linux-unpacked/elestore"
   },
   "dependencies": {
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "homedir": "^0.6.0",
+    "fs-extra-p": "^4.5.2",
+    "copy-dir": "^0.3.0"
   },
   "devDependencies": {
-    "electron-builder": "^20.0.5"
+    "electron-builder": "^20.0.6"
   },
   "build": {
     "appId": "org.bassteam.elestore",
@@ -22,9 +27,7 @@
           "target": "dir",
           "arch": [
             "x64",
-            "ia32",
-            "armv7l",
-            "arm64"
+            "ia32"
           ]
         }
       ]

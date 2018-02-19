@@ -2,10 +2,21 @@ const {app, BrowserWindow} = require('electron'),
     path = require('path'),
     url = require('url'),
     mkdirp = require('mkdirp'),
+    {mkdirpSync} = require('fs-extra-p'),
     fs = require('fs'),
+    copydir = require('copy-dir'),
     pkg = require(path.join(__dirname, 'package.json')),
     child_process = require('child_process'),
-    settings = require(path.join(__dirname, 'settings.json'))
+    __appdir = path.resolve(require('homedir')(), '.config/elestore/3rd-party');
+
+var settings;
+try{
+    settings = require(path.join(__appdir, 'settings.json'));
+} catch(e){
+    mkdirpSync(__appdir);
+    copydir.sync(path.join(__dirname, '3rd-party'), __appdir);
+    settings = require(path.join(__appdir, 'settings.json'))
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,7 +24,7 @@ let win
 
 function loadPage(name){
     return win.loadURL(url.format({
-		pathname: path.join(__dirname, 'themes', settings.theme, `${name}.html`),
+		pathname: path.join(__appdir, 'themes', settings.theme, `${name}.html`),
 		protocol: 'file:',
 		slashes: true
 	}), {
@@ -72,7 +83,7 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-var pluginsPath = path.join(__dirname, 'plugins/sources');
+var pluginsPath = path.join(__appdir, 'plugins/sources');
 
 fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
