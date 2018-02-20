@@ -1,0 +1,7 @@
+{
+  "name": "source-sample",
+  "version": "0.3.1",
+  "author": "Vladislav Marchenko <marlock@etlgr.com> (https://github.com/KaMeHb-UA)",
+  "main": "source-sample.js",
+  "dependencies": {}
+}

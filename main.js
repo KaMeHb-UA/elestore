@@ -2,20 +2,24 @@ const {app, BrowserWindow} = require('electron'),
     path = require('path'),
     url = require('url'),
     mkdirp = require('mkdirp'),
-    {mkdirpSync} = require('fs-extra-p'),
+    deasync = require('deasync'),
+    mkdirpSync = deasync(mkdirp),
+    sleep = deasync((timeout, done)=>{setTimeout(done, timeout)}),
     fs = require('fs'),
     copydir = require('copy-dir'),
     pkg = require(path.join(__dirname, 'package.json')),
     child_process = require('child_process'),
     __appdir = path.resolve(require('homedir')(), '.config/elestore/3rd-party');
 
-var settings;
 try{
-    settings = require(path.join(__appdir, 'settings.json'));
+    var settings = require(path.join(__appdir, 'settings.json'));
 } catch(e){
     mkdirpSync(__appdir);
     copydir.sync(path.join(__dirname, '3rd-party'), __appdir);
-    settings = require(path.join(__appdir, 'settings.json'))
+    child_process.spawn(path.resolve(__dirname, '../../elestore'), [], {
+        detached: true
+    });
+    process.exit()
 }
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -87,58 +91,12 @@ var pluginsPath = path.join(__appdir, 'plugins/sources');
 
 fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
-    var sourceInterfaces = [], depsUpdated = false, internalErr = false;
+    var sourceInterfaces = [];
     files.forEach(file => {
-        if (file != '.' && file != '..' && file != 'source-sample.js') sourceInterfaces.push(require(path.join(pluginsPath, file)));
-        sourceInterfaces.forEach(Interface => {
-            if (pkg.dependencies){
-                for(let i in Interface._properties.dependencies){
-                    if (!pkg.dependencies[i]) {
-                        depsUpdated = true;
-                        pkg.dependencies[i] = Interface._properties.dependencies[i];
-                    } else if (Interface._properties.dependencies[i] != pkg.dependencies[i]){
-                        internalErr = true;
-                        (function tmp(){win && win.webContents ? win.webContents.executeJavaScript(`internalConsole.err(${JSON.stringify(`Cannot use system dependence's another version. [${i}: ${Interface._properties.dependencies[i]} != ${pkg.dependencies[i]}]`)})`) : setTimeout(tmp, 100)})()
-                    }
-                }
-            } else {
-                depsUpdated = true;
-                pkg.dependencies = Interface._properties.dependencies
-            }
-        });
+        if (file != '.' && file != '..' && file != 'source-sample.js' && file != 'source-sample') sourceInterfaces.push(require(path.join(pluginsPath, file)));
     });
-    if (depsUpdated) fs.writeFile(path.join(__dirname, 'package.json'), JSON.stringify(pkg), 'utf8', err => {
-        if (err) return console.log(err); else {
-            win.webContents.executeJavaScript('setLoadingStage("Installing new dependencies")');
-            let installer = child_process.spawn('npm', ['install'], {
-                cwd: __dirname
-            });
-            win.webContents.executeJavaScript(`internalConsole.log('Executed npm install')`);
-            win.webContents.executeJavaScript(`internalConsole.warn('Note: may not work in production')`);
-            installer.stdout.on('data', (data) => {
-                win.webContents.executeJavaScript(`internalConsole.log(${JSON.stringify(data.toString('utf8'))})`)
-            });
-            installer.stderr.on('data', (data) => {
-                win.webContents.executeJavaScript(`internalConsole.err(${JSON.stringify(data.toString('utf8'))})`)
-            });
-            installer.on('close', code => {
-                if (!code){
-                    let tm = 3000;
-                    win.webContents.executeJavaScript(`internalConsole.log("All done, restart in ${tm/1000} seconds")`)
-                    setTimeout(() => {
-                        child_process.spawn('npm', ['start'], {
-                            cwd: __dirname,
-                            detached: true
-                        });
-                        process.exit()
-                    }, tm)
-                } else win.webContents.executeJavaScript('internalConsole.err("Cannot install dependencies. Check your plugins")')
-            });
-        }
-    }); else if(!internalErr){
-        global.API = new (require(path.join(__dirname, 'plugins/api.js')))(sourceInterfaces);
-        drawInterface();
-    }
+    global.API = new (require(path.join(__dirname, 'plugins/api.js')))(sourceInterfaces);
+    drawInterface();
 });
 function drawInterface(){
     try{

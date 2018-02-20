@@ -1,0 +1,9 @@
+{
+  "name": "pseudo-pkgs",
+  "version": "0.1.4",
+  "author": "Vladislav Marchenko <marlock@etlgr.com> (https://github.com/KaMeHb-UA)",
+  "main": "pseudo-pkgs.js",
+  "dependencies": {
+    "request": "^2.83.0"
+  }
+}
