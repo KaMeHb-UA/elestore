@@ -14,7 +14,8 @@
     "mkdirp": "^0.5.1",
     "homedir": "^0.6.0",
     "deasync": "^0.1.12",
-    "copy-dir": "^0.3.0"
+    "copy-dir": "^0.3.0",
+    "npm": "^5.6.0"
   },
   "devDependencies": {
     "electron-builder": "^20.0.6"
