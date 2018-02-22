@@ -225,3 +225,6 @@ header + .mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-
 [role="app-container"] > div.mdl-menu__container.is-upgraded.is-visible{
     padding-left: 7px;
 }
+.demo-layout .demo-navigation .mdl-navigation__link[__action="open-dev-tools-button"][state="disabled"]{
+  display: none !important;
+}

@@ -79,9 +79,6 @@ function createWindow () {
     // and load the startup page of the app.
     loadPage('startup');
 
-    // Open the DevTools.
-    win.webContents.openDevTools()
-
     // Emitted when the window is closed.
     win.on('closed', () => {
         // Dereference the window object, usually you would store windows
@@ -164,7 +161,47 @@ fs.readdir(pluginsPath, (err, files) => {
         })(toInstall.shift())
     } else {
         global.API = new (require(path.join(__dirname, 'plugins/api.js')))(sourceInterfaces);
-        drawInterface();
+        global.devTools = {
+            open: () => {
+                win.webContents.openDevTools()
+            },
+            close: () => {
+                win.webContents.closeDevTools()
+            },
+            toggle: () => {
+                win.webContents.toggleDevTools()
+            },
+            isOpened: () => {
+                return win.webContents.isDevToolsOpened()
+            }
+        };
+        global.API.loaded = () => {
+            return new Promise(resolve => {
+                win.webContents.executeJavaScript(global.API.toInit);
+                global.API.toInit = undefined;
+                win.webContents.executeJavaScript([
+
+
+                    `(div=>{
+                        var devTools;
+                        div ? (
+                            ${
+                                process.argv[1] == '--devmode' ? `devTools = require('electron').remote.getGlobal('devTools'),
+                                div.setAttribute('state', 'closed'),
+                                div.onclick = () => {
+                                    devTools.toggle();
+                                    devTools.isOpened() ? div.setAttribute('state', 'opened') : div.setAttribute('state', 'closed');
+                                    return false
+                                }` : "div.setAttribute('state', 'disabled')"
+                            }
+                        ) : null
+                    })(document.querySelector('[__action="open-dev-tools-button"]'))`,
+    
+                ].join(';'));
+                resolve(global.API)
+            })
+        }
+        drawInterface()
     }
 });
 function drawInterface(){
