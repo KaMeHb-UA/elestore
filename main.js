@@ -4,13 +4,35 @@ const {app, BrowserWindow} = require('electron'),
     mkdirp = require('mkdirp'),
     deasync = require('deasync'),
     mkdirpSync = deasync(mkdirp),
-    sleep = deasync((timeout, done)=>{setTimeout(done, timeout)}),
     fs = require('fs'),
     copydir = require('copy-dir'),
-    pkg = require(path.join(__dirname, 'package.json')),
     child_process = require('child_process'),
     __appdir = path.resolve(require('homedir')(), '.config/elestore/3rd-party'),
-    npm = require('npm');
+    npm = require('npm'),
+    API = require(path.join(__appdir, 'plugins/api.js')),
+    parsedArgs = (shorts => {
+        var res = {
+            params: {},
+            args: []
+        };
+        for(var i = 1; i < process.argv.length; i++){
+            if(process.argv[i][0] == '-'){
+                if(process.argv[i][1] == '-'){
+                    let [arg, ...val] = process.argv[i].slice(2).split('=');
+                    res.params[arg] = val.join('=') || true;
+                } else {
+                    process.argv[i].slice(1).split('').forEach(shorted => {
+                        res.params[shorts[shorted] || `shorted_arg_${shorted}`] = process.argv[++i] || true;
+                    })
+                }
+            } else {
+                res.args.push(process.argv[i] || true)
+            }
+        }
+        return res;
+    })({
+        d: 'devmode'
+    });
 
 function npm_install(dir, logger){
     return new Promise(function(resolve, reject){
@@ -42,6 +64,10 @@ function npm_install(dir, logger){
     })
 }
 
+function check_arg(name){
+    return !!parsedArgs.params[name]
+}
+
 try{
     var settings = require(path.join(__appdir, 'settings.json'));
 } catch(e){
@@ -63,7 +89,7 @@ function loadPage(name){
         protocol: 'file:',
         slashes: true
     }), {
-        API: require(path.join(__dirname, 'plugins/api.js'))
+        API: API
     })
 }
 
@@ -127,11 +153,10 @@ var pluginsPath = path.join(__appdir, 'plugins/sources');
 
 fs.readdir(pluginsPath, (err, files) => {
     if (err) return console.log(err);
-    var sourceInterfaces = [], toInstall = [], depsUpdated = false, internalErr = false;
+    var sourceInterfaces = [], toInstall = [];
     files.forEach(file => {
         if (file != '.' && file != '..' && file != 'source-sample'){
             if(!fs.existsSync(path.join(pluginsPath, file, 'node_modules'))){
-                depsUpdated = true;
                 toInstall.push(path.join(pluginsPath, file));
             } else if (!toInstall.length) sourceInterfaces.push(require(path.join(pluginsPath, file)));
         }
@@ -152,7 +177,13 @@ fs.readdir(pluginsPath, (err, files) => {
                 let tm = 3000;
                 execJS(`internalConsole.log("All done, restart in ${tm/1000} seconds")`)
                 setTimeout(() => {
-                    child_process.spawn(process.argv[0], [], {
+                    child_process.spawn(process.argv[0], (() => {
+                        var args = [];
+                        for(var i = 1; i < process.argv.length; i++){
+                            args.push(process.argv[i]);
+                        }
+                        return args
+                    })(), {
                         detached: true
                     });
                     process.exit()
@@ -160,7 +191,7 @@ fs.readdir(pluginsPath, (err, files) => {
             }
         })(toInstall.shift())
     } else {
-        global.API = new (require(path.join(__dirname, 'plugins/api.js')))(sourceInterfaces);
+        global.API = new API(sourceInterfaces);
         global.devTools = {
             open: () => {
                 win.webContents.openDevTools()
@@ -181,12 +212,11 @@ fs.readdir(pluginsPath, (err, files) => {
                 global.API.toInit = undefined;
                 win.webContents.executeJavaScript([
 
-
                     `(div=>{
                         var devTools;
                         div ? (
                             ${
-                                process.argv[1] == '--devmode' ? `devTools = require('electron').remote.getGlobal('devTools'),
+                                check_arg('devmode') ? `devTools = require('electron').remote.getGlobal('devTools'),
                                 div.setAttribute('state', 'closed'),
                                 div.onclick = () => {
                                     devTools.toggle();
